@@ -181,8 +181,7 @@ class Loss(object):
         schedule = mlrose.ExpDecay()
         # Solve problem using simulated annealing
         result = mlrose.simulated_annealing(problem, schedule = schedule, init_state = init_state, max_attempts = max_attempts, max_iters = max_iters)
-        best_state   = result[0]
-        best_fitness = result[1]
+        best_state, best_fitness, fitness_curve = result
         
         l2s_[best_fitness].append((best_state,max_val))
 
@@ -195,8 +194,7 @@ class Loss(object):
 
         schedule = mlrose.ExpDecay()
         result2 = mlrose.simulated_annealing(problem, schedule = schedule, max_attempts = max_attempts, max_iters = max_iters)
-        best_state   = result2[0]
-        best_fitness = result2[1]
+        best_state, best_fitness, fitness_curve = result2
         l2s_[best_fitness].append((best_state,max_val))
 
         return dict(l2s_)
