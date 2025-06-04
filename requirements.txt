@@ -1,9 +1,10 @@
 # ===== pip‐compatible requirements.txt =====
 certifi==2022.9.24            # was certifi=2022.9.24=py310h06a4308_0 
 joblib==1.1.1                 # was joblib=1.1.1=py310h06a4308_0 :contentReference[oaicite:5]{index=5}
-numpy==1.23.4                 # was numpy=1.23.4=py310hd5efca6_0 
-scipy==1.9.3                  # was scipy=1.9.3=py310hd5efca6_0 
-scikit-learn==1.1.3           # was scikit-learn=1.1.3=py310h6a678d5_0 
-six==1.16.0                   # was six=1.16.0=pyhd3eb1b0_1 :contentReference[oaicite:9]{index=9}
 threadpoolctl==2.2.0          # was threadpoolctl=2.2.0=pyh0d69192_0 
-networkx==3.1                 # replace with latest 3.x if needed 
+numpy>=2.2.6,<2.3             # NumPy 2.2.6 adds `numpy.strings` and supports all array ops used 
+scipy>=1.15.3,<1.16           # SciPy 1.15.3 provides `spearmanr` and `linear_sum_assignment` 
+networkx>=3.4.2,<3.5          # NetworkX 3.4.2 supports `transitive_closure` 
+six>=1.17.0,<1.18             # Six 1.17.0 for `sklearn.externals.six` shim 
+mlrose-hiive>=1.3.0,<1.4      # mlrose-hiive 1.3.0 supplies `CustomFitness` and `simulated_annealing` 
+scikit-learn>=1.6.1,<1.7      # scikit-learn 1.6.1 is required by mlrose-hiive 
