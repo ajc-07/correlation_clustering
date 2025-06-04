@@ -3,7 +3,7 @@
 # Python 3.11+–compatible pins, mid-2025
 
 certifi==2025.4.26         # Latest as of Apr 26 2025
-joblib==1.5.1              # Latest as of May 23 2025
+joblib==1.1.1              # Pin down to 1.1.1 so that joblib.my_exceptions still exists
 threadpoolctl==3.6.0       # Latest as of Mar 13 2025
 numpy==1.26.4              # Latest 1.26.x (meets TensorFlow’s >=1.26.0,<2.1.0)
 scipy==1.15.3              # Latest as of May 08 2025 (works with numpy 1.26.x)
