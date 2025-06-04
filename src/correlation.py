@@ -194,8 +194,9 @@ class Loss(object):
         problem = mlrose.DiscreteOpt(length = len(nodes), fitness_fn = fitness_fn, maximize = False, max_val = max_val)
 
         schedule = mlrose.ExpDecay()
-        best_state, best_fitness = mlrose.simulated_annealing(problem, schedule = schedule, max_attempts = max_attempts, max_iters = max_iters)
-
+        result2 = mlrose.simulated_annealing(problem, schedule = schedule, max_attempts = max_attempts, max_iters = max_iters)
+        best_state   = result2[0]
+        best_fitness = result2[1]
         l2s_[best_fitness].append((best_state,max_val))
 
         return dict(l2s_)
