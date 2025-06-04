@@ -8,7 +8,7 @@ from scipy.stats import spearmanr
 from networkx.algorithms.dag import transitive_closure
 import six
 sys.modules['sklearn.externals.six'] = six
-import mlrose
+import mlrose_hiive as mlrose
 import time
 from scipy.optimize import linear_sum_assignment
 import multiprocessing as mp
