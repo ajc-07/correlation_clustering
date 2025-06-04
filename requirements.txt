@@ -1,11 +1,13 @@
-# ===== pip‐compatible requirements.txt =====
+# ===== Updated pip‐compatible requirements.txt =====
 
-certifi==2025.4.26
-joblib==1.5.1
-threadpoolctl==3.6.0
-numpy==2.2.6
-scipy==1.15.3
-networkx==3.4.2
-six==1.17.0
-mlrose-hiive==2.2.4
-scikit-learn==1.6.1
+# Python 3.11+–compatible pins, mid-2025
+
+certifi==2025.4.26         # Latest certifi (Apr 26 2025)
+joblib==1.5.1              # Latest joblib (May 23 2025)
+threadpoolctl==3.6.0       # Latest threadpoolctl (Mar 13 2025)
+numpy==2.2.6               # Latest numpy 2.x (May 17 2025) → provides numpy.strings
+scipy==1.15.3              # Latest SciPy (May 08 2025) → provides spearmanr & linear_sum_assignment
+networkx==3.4.2            # Latest NetworkX 3.x as of May 2025 → dag.transitive_closure
+six==1.17.0                # Latest six (Dec 04 2024) → for sklearn.externals.six shim
+mlrose-hiive==2.2.4        # Latest mlrose-hiive (Jun 10 2025) → provides CustomFitness & simulated_annealing
+scikit-learn==1.6.1        # Latest scikit-learn (Jan 10 2025) required by mlrose-hiive 2.x
