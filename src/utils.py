@@ -1,4 +1,5 @@
 import networkx as nx
+import sys
 
 def transform_edge_weights(G, transformation = lambda x: x):
     """
