@@ -53,7 +53,7 @@ def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=N
     )
 
     Linear_loss = Loss(
-        'linear_loss', edges_positive=edges_positive, edges_negative=edges_negative
+        'linear_loss', edges_positive=edges_positive, edges_negative=edges_negative, exact_k = k
     )
 
     # Define initial state array
@@ -126,7 +126,10 @@ class Loss(object):
     Wrapper for different loss computations.
     """
     def __init__(self, fitness_fn, edges_positive=None, edges_negative=None,
-                 edges_min=None, edges_max=None, signs=None):
+                 edges_min=None, edges_max=None, signs=None, k_exact=None, penalty=1e9):
+        # Still wasn't doing exact number of clusters, so add huge loss if not exactly k
+        self.k_exact = k_exact
+        self.penalty = penalty
         self.edges_positive = edges_positive
         self.edges_negative = edges_negative
         self.edges_min = edges_min
@@ -148,8 +151,19 @@ class Loss(object):
         return 50.0
 
     def linear_loss(self, state):
-        return np.sum([w for (i,j,w) in self.edges_positive if state[i]!=state[j]]) \
-             + np.sum([abs(w) for (i,j,w) in self.edges_negative if state[i]==state[j]])
+        # original cost
+        cost = (
+            np.sum([w             for (i,j,w) in self.edges_positive if state[i]!=state[j]])
+          + np.sum([abs(w)        for (i,j,w) in self.edges_negative if state[i]==state[j]])
+        )
+
+        # If there exists a k_exact, then if number of clusters isn't exact then add huge loss
+        if self.k_exact is not None:
+            used = len(set(state))
+            if used != self.k_exact: # Wrong count -> huge penalty
+                cost += self.penalty * abs(used - self.k_exact)
+
+        return cost
 
     def binary_loss(self, state):
         loss_pos = len([1 for (i,j,w) in self.edges_positive if state[i]!=state[j]])
