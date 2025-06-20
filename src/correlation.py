@@ -53,7 +53,7 @@ def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=N
     )
 
     Linear_loss = Loss(
-        'linear_loss', edges_positive=edges_positive, edges_negative=edges_negative, exact_k = k
+        'linear_loss', edges_positive=edges_positive, edges_negative=edges_negative, k_exact = k
     )
 
     # Define initial state array
