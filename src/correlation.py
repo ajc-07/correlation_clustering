@@ -14,7 +14,7 @@ from scipy.optimize import linear_sum_assignment
 import multiprocessing as mp
 
 
-def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=None, split_flag=True):
+def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=None, split_flag=True, loss_threshold=1e18):
     """
     Apply correlation clustering with exactly k clusters. Assumes that negative edges have weights < 0,
     and positive edges have weights >= 0, that edges with nan have been removed, and that weights are
@@ -26,6 +26,7 @@ def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=N
     :param max_iters: number of iterations for optimization
     :param initial: optional clustering for initialization
     :param split_flag: optional flag, if non-evidence cluster should be split
+    :param loss_threshold: keep searching if loss is above this threshold
     :return classes, stats: list of clusters, stats dict
     """
     start_time = time.time()
@@ -77,23 +78,38 @@ def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=N
     l2s = defaultdict(list)
     l2s[loss_init].append((init_state, len(classes)))
 
-    # Initialize multiprocessing pool
-    pool = mp.Pool(mp.cpu_count())
-
-    # CHANGED: Only run simulated annealing once for n = k
-    solutions = pool.starmap(
-        Linear_loss.optimize_simulated_annealing,
-        [(k, classes, G.nodes(), init_state, max_attempts, max_iters)]
-    )
-    pool.close()
-
-    # Merge solutions from pool
-    for sol in solutions:
-        for loss_val, states in sol.items():
-            l2s[loss_val].extend(states)
-
+    # Keep searching until we find a solution below the threshold
+    search_attempts = 0
+    max_search_attempts = 10  # Prevent infinite loops
+    best_loss = loss_init  # Start with the initial loss, not infinity
+    
+    while best_loss > loss_threshold and search_attempts < max_search_attempts:
+        search_attempts += 1
+        print(f"Search attempt {search_attempts}, looking for loss < {loss_threshold}")
+        
+        # Initialize multiprocessing pool for this attempt
+        pool = mp.Pool(mp.cpu_count())
+        
+        # CHANGED: Only run simulated annealing once for n = k
+        solutions = pool.starmap(
+            Linear_loss.optimize_simulated_annealing,
+            [(k, classes, G.nodes(), init_state, max_attempts, max_iters)]
+        )
+        
+        # Close pool immediately after use
+        pool.close()
+        pool.join()
+        
+        # Merge solutions from pool
+        for sol in solutions:
+            for loss_val, states in sol.items():
+                l2s[loss_val].extend(states)
+        
+        # Update best loss found so far
+        best_loss = min(l2s.keys())
+        print(f"Best loss found: {best_loss}")
+    
     # Select the best state
-    best_loss = min(l2s.keys())
     chosen_states = l2s[best_loss]
     best_state, _ = random.choice(chosen_states)
 
