@@ -198,10 +198,10 @@ class Loss(object):
             length=len(nodes), fitness_fn=fitness_fn,
             maximize=False, max_val=n  # CHANGED: force exactly k clusters
         )
-        schedule = mlrose.ExpDecay()
+        schedule = mlrose.GeomDecay()
         best_state, best_fitness, _ = mlrose.simulated_annealing(
             problem, schedule=schedule, init_state=init_state,
-            max_attempts=max_attempts, max_iters=max_iters
+            max_attempts=max_attempts, max_iters=max_iters, n_restarts=10
         )
         l2s_[best_fitness].append((best_state, n))
 
@@ -211,10 +211,10 @@ class Loss(object):
             length=len(nodes), fitness_fn=fitness_fn,
             maximize=False, max_val=n  # CHANGED: force exactly k clusters
         )
-        schedule = mlrose.ExpDecay()
+        schedule = mlrose.GeomDecay()
         best_state2, best_fitness2, _ = mlrose.simulated_annealing(
             problem, schedule=schedule,
-            max_attempts=max_attempts, max_iters=max_iters
+            max_attempts=max_attempts, max_iters=max_iters, n_restarts=10
         )
         l2s_[best_fitness2].append((best_state2, n))
 
