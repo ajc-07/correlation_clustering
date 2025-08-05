@@ -14,7 +14,7 @@ from scipy.optimize import linear_sum_assignment
 import multiprocessing as mp
 
 
-def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=None, split_flag=True, loss_threshold=1e18):
+def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=None, split_flag=True, loss_threshold=1e18, max_search_attempts=10):
     """
     Apply correlation clustering with exactly k clusters. Assumes that negative edges have weights < 0,
     and positive edges have weights >= 0, that edges with nan have been removed, and that weights are
@@ -27,6 +27,7 @@ def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=N
     :param initial: optional clustering for initialization
     :param split_flag: optional flag, if non-evidence cluster should be split
     :param loss_threshold: keep searching if loss is above this threshold
+    :param max_search_attempts: maximum number of search attempts at the outer level
     :return classes, stats: list of clusters, stats dict
     """
     start_time = time.time()
@@ -80,7 +81,6 @@ def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=N
 
     # Keep searching until we find a solution below the threshold
     search_attempts = 0
-    max_search_attempts = 10  # Prevent infinite loops
     best_loss = loss_init  # Start with the initial loss, not infinity
     
     while best_loss > loss_threshold and search_attempts < max_search_attempts:
