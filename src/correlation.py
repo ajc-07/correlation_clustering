@@ -83,9 +83,12 @@ def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=N
     search_attempts = 0
     best_loss = loss_init  # Start with the initial loss, not infinity
     
-    while best_loss > loss_threshold and search_attempts < max_search_attempts:
+    # Get initial number of clusters
+    num_clusters = len(set(init_state))
+
+    while (best_loss > loss_threshold or num_clusters != k) and search_attempts < max_search_attempts:
         search_attempts += 1
-        print(f"Search attempt {search_attempts}, looking for loss < {loss_threshold}")
+        print(f"Search attempt {search_attempts}, looking for loss < {loss_threshold} and {k} clusters.")
         
         # Initialize multiprocessing pool for this attempt
         pool = mp.Pool(mp.cpu_count())
@@ -105,9 +108,11 @@ def cluster_correlation_search(G, k, max_attempts=200, max_iters=5000, initial=N
             for loss_val, states in sol.items():
                 l2s[loss_val].extend(states)
         
-        # Update best loss found so far
+        # Update best loss and cluster count found so far
         best_loss = min(l2s.keys())
-        print(f"Best loss found: {best_loss}")
+        best_state_for_count, _ = random.choice(l2s[best_loss])
+        num_clusters = len(set(best_state_for_count))
+        print(f"Best loss found: {best_loss}, Clusters found: {num_clusters}")
     
     # Select the best state
     chosen_states = l2s[best_loss]
@@ -214,7 +219,7 @@ class Loss(object):
             length=len(nodes), fitness_fn=fitness_fn,
             maximize=False, max_val=n  # CHANGED: force exactly k clusters
         )
-        schedule = mlrose.GeomDecay()
+        schedule = mlrose.ExpDecay()
         best_state, best_fitness, _ = mlrose.simulated_annealing(
             problem, schedule=schedule, init_state=init_state,
             max_attempts=max_attempts, max_iters=max_iters
@@ -227,7 +232,7 @@ class Loss(object):
             length=len(nodes), fitness_fn=fitness_fn,
             maximize=False, max_val=n  # CHANGED: force exactly k clusters
         )
-        schedule = mlrose.GeomDecay()
+        schedule = mlrose.ExpDecay()
         best_state2, best_fitness2, _ = mlrose.simulated_annealing(
             problem, schedule=schedule,
             max_attempts=max_attempts, max_iters=max_iters
